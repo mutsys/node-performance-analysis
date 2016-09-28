@@ -18,9 +18,16 @@
  * `node app.js --silent --port=80 --prod`
  */
 
-require('./node-stats-for-newrelic').init();
-// require('./heap-stats').init('heap-stat-data.csv');
-// require('./cpu-stats').init('cpu-stat-data.csv');
+//
+// this one sends data to new relic
+//
+// require('./node-stats-for-newrelic').init();
+//
+// these capture data locally to csv files
+//
+require('./heap-stats').init('heap-stat-data.csv');
+require('./cpu-stats').init('cpu-stat-data.csv');
+require('./gc-stats').init('gc-stat-data.csv');
 
 // Ensure we're in the project directory, so relative paths work as expected
 // no matter where we actually lift from.
