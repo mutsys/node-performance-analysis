@@ -20,6 +20,7 @@
 
 require('./heap-stats').init('heap-stat-data.csv');
 require('./cpu-stats').init('cpu-stat-data.csv');
+require('./gc-stats').init('gc-stat-data.csv');
 
 // Ensure we're in the project directory, so relative paths work as expected
 // no matter where we actually lift from.
