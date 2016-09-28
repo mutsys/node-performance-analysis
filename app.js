@@ -19,6 +19,8 @@
  */
 
 require('./node-stats-for-newrelic').init();
+// require('./heap-stats').init('heap-stat-data.csv');
+// require('./cpu-stats').init('cpu-stat-data.csv');
 
 // Ensure we're in the project directory, so relative paths work as expected
 // no matter where we actually lift from.

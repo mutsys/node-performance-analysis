@@ -71,19 +71,21 @@ set yrange[0:4000]
 set ytics 200 offset -20, 0
 set ylabel "Total Heap Size (MB)" offset -20, 0 textcolor rgb "green"
 
+set samples 150
+
 plot \
   "$heap_stats_data" every ::1 using (\$1 - $min_timestamp):3 notitle with points pointtype 4 ps 1 lc rgb "green",\
-  "$heap_stats_data" every ::1 using (\$1 - $min_timestamp):3 smooth sbezier notitle with lines lc rgb "green" lw 2
-
+  "$heap_stats_data" every ::1 using (\$1 - $min_timestamp):3 smooth csplines notitle with lines lc rgb "green" lw 2
 
 set yrange[0:4000]
 set ytics 200 offset -30, 0
 set ylabel "Used Heap Size (MB)" offset -30, 0 textcolor rgb "purple"
 
+set samples 150
+
 plot \
   "$heap_stats_data" every ::1 using (\$1 - $min_timestamp):7 notitle with points pointtype 4 ps 1 lc rgb "purple",\
-  "$heap_stats_data" every ::1 using (\$1 - $min_timestamp):7 smooth sbezier notitle with lines lc rgb "purple" lw 2
-
+  "$heap_stats_data" every ::1 using (\$1 - $min_timestamp):7 smooth csplines notitle with lines lc rgb "purple" lw 2
 
 
 unset multiplot
