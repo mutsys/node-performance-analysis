@@ -5,19 +5,19 @@ graphfile="request-stats.png"
 request_data="request-stat-data.csv"
 min_request_data_timestamp=$( tail -n +2 "$request_data" | cut -d "," -f 1 | sort -g | head -1 )
 max_request_date_timestamp=$( tail -n +2 "$request_data" | cut -d "," -f 1 | sort -r -g | head -1 )
-max_request_duration=$( tail -n +2 "$request_data" | cut -d "," -f 2 | sort -r -g | head -1 )
 min_request_data_timestamp=$(( min_request_data_timestamp / 1000 ))
 max_request_date_timestamp=$(( max_request_date_timestamp / 1000 ))
-
+num_requests=$( tail -n +2 "$request_data" | wc -l )
+skip_request_durations=$(( num_requests * 25 / 1000 ))
+max_request_duration_secs=$( tail -n +2 "$request_data" | cut -d "," -f 2 | xargs -I {} echo "{} / 1000" | bc | sort -r -g | tail -n +"$skip_request_durations" | head -1 )
 
 node_process_data="node-process-stats.csv"
 min_node_process_data_timestamp=$( cat "$node_process_data" | cut -d "," -f 1 | sort -g | head -1 )
 max_node_process_data_timestamp=$( cat "$node_process_data" | cut -d "," -f 1 | sort -r -g | head -1 )
-#max_node_process_pcpu=$( cat "$node_process_data" | cut -d "," -f 2 | sort -r -g | head -1 | cut -d "." -f 1 )
 
-uniq_max_node_process_pcpu=$( cat "$node_process_data" | cut -d "," -f 2  | cut -d "." -f 1 | uniq | wc -l )
-skip=$(( uniq_max_node_process_pcpu / 25 ))
-max_node_process_pcpu=$( cat "$node_process_data" | cut -d "," -f 2  | cut -d "." -f 1 | uniq | sort -r -g | tail -n +"$skip" | head -1 )
+uniq_node_process_pcpu=$( cat "$node_process_data" | cut -d "," -f 2  | cut -d "." -f 1 | uniq | wc -l )
+skip_node_process_pcpu=$(( uniq_node_process_pcpu / 25 ))
+max_node_process_pcpu=$( cat "$node_process_data" | cut -d "," -f 2  | cut -d "." -f 1 | uniq | sort -r -g | tail -n +"$skip_node_process_pcpu" | head -1 )
 
 heap_stats_data="heap-stat-data.csv"
 min_heap_stats_data_timestamp=$( cat "$heap_stats_data" | cut -d "," -f 1 | sort -g | head -1 )
@@ -47,12 +47,10 @@ $max_gc_stats_data_timestamp"
 min_timestamp=$( echo "$all_min_timestamps" | sort -g | head -1 )
 max_timestamp=$( echo "$all_max_timestamps" | sort -r -g | head -1 )
 
-total_duration=$(( max_timestamp - min_timestamp ))
-hundreds=$(( total_duration / 100 ))
-x_range_max=$(( hundreds * 100 ))
+x_range_max=$(( ( ( ( max_timestamp - min_timestamp ) / 100 ) + 1 ) * 100 ))
 x_tics=$(( x_range_max / 50 ))
 
-request_duration_max=$(( ( ( max_request_duration / 10000 ) + 1 ) * 10000 ))
+request_duration_max=$(( ( ( max_request_duration_secs / 10 ) + 1 ) * 10000 ))
 request_duration_tics=$(( request_duration_max / 10 ))
 
 process_pcpu_max=$(( ( ( max_node_process_pcpu / 100 ) + 1 ) * 100 ))
@@ -83,43 +81,48 @@ set xlabel "elapsed time (s)"
 set multiplot
 set title "node app performance analysis"
 set lmargin screen 0.25
-set samples 50
 
 set yrange[0:$heap_max]
 set ytics $heap_tics
-set ylabel "Total Heap Size (MB)" textcolor rgb "green"
+set mytics 5
+set grid ytics
+set ylabel "{/:Bold Total Heap Size (MB)}" textcolor rgb "green"
+set samples 50
 
 plot \
   "$heap_stats_data" every ::1 using (\$1 - $min_timestamp):3 notitle smooth csplines lw 3 lc rgb "green"
 
 set yrange[0:$heap_max]
 set ytics $heap_tics offset -10, 0
-set ylabel "Used Heap Size (MB)" offset -10, 0 textcolor rgb "purple"
+set ylabel "{/:Bold Used Heap Size (MB)}" offset -10, 0 textcolor rgb "purple"
 
 plot \
   "$heap_stats_data" every ::1 using (\$1 - $min_timestamp):7 notitle with lines lw 3 lc rgb "purple"
 
 set yrange[0:$gc_pause_max]
 set ytics $gc_pause_tics offset -20, 0
-set ylabel "GC Pause (ms)" offset -20, 0 textcolor rgb "orange"
+set ylabel "{/:Bold GC Pause (ms)}" offset -20, 0 textcolor rgb "orange"
 
 plot \
   "$gc_stats_data" every ::1 using (\$1 / 1000 - $min_timestamp):(\$3 / 1000) notitle with impulse lc rgb "#44EED540" lw 4
 
 set yrange[0:$request_duration_max]
 set ytics $request_duration_tics offset -30, 0
-set ylabel "response time (ms)" offset -30, 0 textcolor rgb "blue"
+set ylabel "{/:Bold Response time (ms)}" offset -30, 0 textcolor rgb "blue"
+set samples 25
 
 plot \
-  "$request_data" every ::2 using (\$1 / 1000 - $min_timestamp):2 notitle with points pointtype 1 ps 1 lc rgb "blue",\
-  "$request_data" every ::2 using (\$1 / 1000 - $min_timestamp):2 smooth sbezier notitle with lines lc rgb "black" lw 4
+  "$request_data" every ::2 using (\$1 / 1000 - $min_timestamp):2:((column(0)+1) / $num_requests) smooth acsplines notitle with lines lc rgb "blue" lw 4,\
+  "$request_data" every ::2 using (\$1 / 1000 - $min_timestamp):2 notitle with points pointtype 5 ps .5 lc rgb "blue"
+
 
 set yrange[0:$process_pcpu_max]
 set ytics $process_pcpu_tics offset -40, 0
-set ylabel "Percent CPU" offset -40, 0 textcolor rgb "red"
+set ylabel "{/:Bold Percent CPU}" offset -40, 0 textcolor rgb "red"
+set samples 100
 
 plot \
-  "$node_process_data" every ::1 using (\$1 - $min_timestamp):2 notitle with points pointtype 6 ps 1 lc rgb "red" lw 2,\
+  "$node_process_data" every ::1 using (\$1 - $min_timestamp):2 notitle with points pointtype 6 ps 1.5 lc rgb "red" lw 2,\
   "$node_process_data" every ::1 using (\$1 - $min_timestamp):2 smooth sbezier notitle with lines lc rgb "red" lw 3
 
 unset multiplot
