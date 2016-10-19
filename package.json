@@ -5,6 +5,7 @@
   "description": "a Sails application",
   "keywords": [],
   "dependencies": {
+    "concat-stream": "^1.5.2",
     "ejs": "2.3.4",
     "gc-stats": "^1.0.0",
     "grunt": "1.0.1",
@@ -28,7 +29,7 @@
   },
   "scripts": {
     "debug": "node debug app.js",
-    "start": "node app.js"
+    "start": "node --harmony app.js"
   },
   "main": "app.js",
   "repository": {

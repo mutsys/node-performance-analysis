@@ -114,7 +114,7 @@ function sendStats(sampleType, sample) {
     {
       host: 'localhost',
       port: 8080,
-      path: `/data/${sampleType}`,
+      path: '/data/' + sampleType,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -129,7 +129,7 @@ function sendStats(sampleType, sample) {
     }
   );
   post.on('error', (e) => {
-    console.log(`could not post data sample: ${e.message}`)
+    console.log('could not post data sample: ' +e.message);
   });
   post.write(sampleJson);
   post.end();
