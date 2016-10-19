@@ -14,4 +14,4 @@ rm *csv
 
 nohup ./collect-node-process-data.sh &
 
-node --nouse_idle_notification --gc_global --max_old_space_size=4096 --initial_old_space_size=2048 --min_semi_space_size=64 --max_semi_space_size=256 app.js
+NODE_ENV=production node --v8-pool-size=20 --nouse_idle_notification --gc_global --max_old_space_size=4096 --initial_old_space_size=2048 --min_semi_space_size=64 --max_semi_space_size=256 app.js

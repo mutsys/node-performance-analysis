@@ -14,4 +14,4 @@ rm *csv
 
 nohup ./collect-node-process-data.sh &
 
-node app.js
+NODE_ENV=production node app.js

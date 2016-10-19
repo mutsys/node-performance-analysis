@@ -25,9 +25,13 @@
 //
 // these capture data locally to csv files
 //
-require('./heap-stats').init('heap-stat-data.csv');
-require('./cpu-stats').init('cpu-stat-data.csv');
-require('./gc-stats').init('gc-stat-data.csv');
+// require('./heap-stats').init('heap-stat-data.csv');
+// require('./cpu-stats').init('cpu-stat-data.csv');
+// require('./gc-stats').init('gc-stat-data.csv');
+//
+// this one sends data to a local graphing server
+//
+require('./node-stats-for-local').init();
 
 // Ensure we're in the project directory, so relative paths work as expected
 // no matter where we actually lift from.
