@@ -5,5 +5,9 @@
   "hooks": {
     "session": false,
     "grunt": false
+  },
+  "log": {
+    "noShip": true,
+    "level": "info"
   }
 }
