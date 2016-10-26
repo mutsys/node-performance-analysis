@@ -31,7 +31,7 @@
 //
 // this one sends data to a local graphing server
 //
-//require('./node-stats-for-local').init();
+require('./node-stats-for-local').init();
 
 // Ensure we're in the project directory, so relative paths work as expected
 // no matter where we actually lift from.
