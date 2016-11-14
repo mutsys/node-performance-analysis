@@ -9,6 +9,9 @@
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.http.html
  */
 
+
+// var httpStats = require('../http-stats-for-local');
+
 module.exports.http = {
 
   /****************************************************************************
@@ -22,6 +25,26 @@ module.exports.http = {
   ****************************************************************************/
 
   middleware: {
+
+    order: [
+      'startRequestTimer',
+      // 'httpStats',
+      'cookieParser',
+      'session',
+      'bodyParser',
+      'handleBodyParserError',
+      'compress',
+      'methodOverride',
+      'poweredBy',
+      '$custom',
+      'router',
+      'www',
+      'favicon',
+      '404',
+      '500'
+    ],
+
+    // httpStats: httpStats.httpStatsReporter
 
   /***************************************************************************
   *                                                                          *
