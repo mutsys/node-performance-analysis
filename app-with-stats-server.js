@@ -32,9 +32,9 @@ const { CpuStatsCollector, HeapStatsCollector, GcStatsCollector, QueueStatsColle
 const statsServer = require("stats-server");
 
 const cpuStatsCollector = new CpuStatsCollector(statsServer.sendStatData);
-const HeapStatsCollector = new HeapStatsCollector(statsServer.sendStatData);
-const GcStatsCollector = new GcStatsCollector(statsServer.sendStatData);
-const QueueStatsCollector = new QueueStatsCollector(statsServer.sendStatData);
+const heapStatsCollector = new HeapStatsCollector(statsServer.sendStatData);
+const gcStatsCollector = new GcStatsCollector(statsServer.sendStatData);
+const queueStatsCollector = new QueueStatsCollector(statsServer.sendStatData);
 
 // Ensure a "sails" can be located:
 (function() {
